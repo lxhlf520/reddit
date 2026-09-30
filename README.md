@@ -278,7 +278,9 @@ apt install aria2
 #    KEEP_ZST=0               # 入库后删 zst 省磁盘（1=保留冷备份）
 
 # 3) 建库（幂等，重跑只补缺分区；已建库重跑会自动 ALTER 补新列）
-psql "$PG_DSN" -f backfill/pg_schema.sql
+#    无 psql 的机器用内置 dbtool（psycopg 执行同一份 SQL，多语句单事务原子执行）：
+uv run python -m backfill.dbtool init
+#    有 psql 时等价：psql "$PG_DSN" -f backfill/pg_schema.sql
 
 # 4) 轻量验收（可选，几分钟）：API 拉几千条灌入当月分区，免整月 BT 下载先验全链路
 uv run python -m backfill.fetch_sample --comments 2000 --posts 1000
@@ -295,6 +297,7 @@ uv run python -m backfill.pipeline --from-month 2020-01 --to-month 2026-08 --dry
 
 要点：
 - **轻量验收（fetch_sample）**：BT 最小下载单元是整月（最小月 ~22GB），`backfill/fetch_sample.py` 用 Arctic Shift API（与 dump 同源、字段同构）拉几千条直灌当月分区，几分钟验证「建表 → 字段映射 → COPY 入库 → 分区路由」全链路。可重复运行（id 冲突自动跳过）、不写 import_log（样本 ≠ 月份完成）；`--comments/--posts/--month` 可调，详见 `--help`。API 必须直连（工具内置空代理，禁套代理）
+- **dbtool（psql 替代）**：服务器无 psql 客户端时用 `uv run python -m backfill.dbtool`——`init` 执行 `pg_schema.sql` 建表、`check` 就绪自检（分区数对照 DDL）、`sql "..."` 单条查询（验收计数、mismatch 重置等均可用）；DSN 默认读 .env / `PG_DSN`，`--dsn` 可覆盖
 - **无人值守（--loop）**：每轮跑完写 `docs/backfill_report.md`（状态汇总 + 逐月行数对账表 + 待处理清单）；仍有未完成单元时等 5 分钟（`--loop-wait` 可调）再进入下一轮（aria2 控制文件续传 + TRUNCATE 幂等重灌）；`failed` 月达 `--max-retries`（默认 10）后停下等人工；mismatch 不自动重试，人工处理后重置：
   ```sql
   UPDATE import_log SET status='pending', retries=0 WHERE type='...' AND month='...';
@@ -368,6 +371,8 @@ reddit/
 │   ├── pg_schema.sql       #   PostgreSQL DDL（月度分区 ×160 + import_log 状态机）
 │   ├── download.py         #   aria2c 封装：渠道分目录 + 断点续传 + 完成判据
 │   ├── ingest.py           #   zst 流式解压 → psycopg3 COPY（快/慢双路径）
+│   ├── fetch_sample.py     #   Arctic API 小样本直灌 PG（几千条轻量验收）
+│   ├── dbtool.py           #   psql 替代：init 建表 / check 就绪检查 / sql 查询
 │   └── pipeline.py         #   月度状态机 + --loop 无人值守 + 进度报告
 └── reddit_collector/
     ├── config.py           # 端点/UA/headers/限流/代理/路径/种子加载

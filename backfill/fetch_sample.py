@@ -142,7 +142,7 @@ def load_rows(dsn: str, kind: str, month: str, rows: list) -> tuple:
             if not exists:
                 raise SystemExit(
                     f"分区表 {partition} 不存在 —— 请先建表：\n"
-                    f'  psql "$PG_DSN" -f backfill/pg_schema.sql')
+                    f"  uv run python -m backfill.dbtool init")
             cur.execute(f"CREATE TEMP TABLE tmp_sample "
                         f"(LIKE {partition} INCLUDING DEFAULTS) "
                         f"ON COMMIT DROP")
@@ -197,7 +197,7 @@ def main(argv=None) -> int:
     if missing:
         print(f"分区表 {', '.join(missing)} 不存在 —— 请先建表：",
               file=sys.stderr)
-        print('  psql "$PG_DSN" -f backfill/pg_schema.sql', file=sys.stderr)
+        print("  uv run python -m backfill.dbtool init", file=sys.stderr)
         return 2
 
     print(f"目标：{args.month}  comments={args.comments}  posts={args.posts}")
@@ -220,11 +220,13 @@ def main(argv=None) -> int:
         total_new += inserted
 
     suffix = f"{y}_{m}"
-    print(f"\n完成：共新增 {total_new} 条。验收查询：")
-    print(f'  psql "$PG_DSN" -c "SELECT count(*) FROM comments_{suffix};"')
-    print(f'  psql "$PG_DSN" -c "SELECT count(*) FROM posts_{suffix};"')
-    print(f'  psql "$PG_DSN" -c "SELECT id, author, subreddit, '
-          f'score, left(body, 50) FROM comments_{suffix} LIMIT 3;"')
+    print(f"\n完成：共新增 {total_new} 条。验收查询（dbtool 替代 psql）：")
+    print(f'  uv run python -m backfill.dbtool sql '
+          f'"SELECT count(*) FROM comments_{suffix}"')
+    print(f'  uv run python -m backfill.dbtool sql '
+          f'"SELECT count(*) FROM posts_{suffix}"')
+    print(f'  uv run python -m backfill.dbtool sql "SELECT id, author, subreddit, '
+          f'score, left(body, 50) FROM comments_{suffix} LIMIT 3"')
     return 0
 
 
