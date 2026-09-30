@@ -107,6 +107,23 @@ def fetch_rows(kind: str, month: str, target: int) -> tuple:
     return rows[:target], requests, skipped
 
 
+def check_partitions(dsn: str, month: str, kinds: list) -> list:
+    """入库前置检查：返回缺失的目标分区表名（fail-fast）。
+
+    PG 不可达或表未建时在拉数据前就退出，避免白拉几分钟才发现。
+    """
+    y, m = month.split("-")
+    missing = []
+    with psycopg.connect(dsn, connect_timeout=15) as conn:
+        with conn.cursor() as cur:
+            for kind in kinds:
+                partition = f"{kind}_{y}_{m}"
+                if not cur.execute("SELECT to_regclass(%s)",
+                                   (partition,)).fetchone()[0]:
+                    missing.append(partition)
+    return missing
+
+
 def load_rows(dsn: str, kind: str, month: str, rows: list) -> tuple:
     """COPY 到临时表 → INSERT ON CONFLICT DO NOTHING（可重复运行）。
 
@@ -168,6 +185,20 @@ def main(argv=None) -> int:
         return 2
     y, m = args.month.split("-")
     month_bounds(int(y), int(m))   # 提前校验月份格式
+
+    # fail-fast：分区不存在 / PG 不可达时，在拉数据前退出（避免白拉）
+    kinds = [k for k, n in (("comments", args.comments),
+                            ("posts", args.posts)) if n > 0]
+    try:
+        missing = check_partitions(dsn, args.month, kinds)
+    except psycopg.Error as e:
+        print(f"PG 连接失败：{e}", file=sys.stderr)
+        return 2
+    if missing:
+        print(f"分区表 {', '.join(missing)} 不存在 —— 请先建表：",
+              file=sys.stderr)
+        print('  psql "$PG_DSN" -f backfill/pg_schema.sql', file=sys.stderr)
+        return 2
 
     print(f"目标：{args.month}  comments={args.comments}  posts={args.posts}")
     total_new = 0
