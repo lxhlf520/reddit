@@ -1,0 +1,18 @@
+# Reddit 采集种子（每行一个子版块名，不带 r/ 前缀；# 开头为注释）
+# 采集链路：帖子列表(listings) → 帖子详情+评论(posts) → 用户资料(users)
+# popular 是聚合首页列表，非真实子版块，可用于快速验证
+popular
+AskReddit
+news
+worldnews
+technology
+science
+dataisbeautiful
+pics
+videos
+gaming
+movies
+music
+todayilearned
+LifeProTips
+explainlikeimfive

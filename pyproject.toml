@@ -1,0 +1,38 @@
+[project]
+name = "reddit-collector"
+version = "0.1.0"
+description = "Reddit 纯协议采集系统 - 帖子列表/帖子详情+评论树/用户资料"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "lxhlf520" },
+]
+keywords = ["scraper", "reddit", "web-scraping", "curl-cffi", "protocol"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+
+dependencies = [
+    # Windows 下 0.7.4 为已验证的稳定版本（更高版本曾出现 OPENSSL_internal TLS 握手兼容问题）
+    "curl-cffi==0.7.4",
+    "psycopg[binary]>=3.3.6",
+    "pyarrow>=25.0.1",
+    "zstandard>=0.25.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=8.0",
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# 默认只跑离线测试；触网探针需显式 -m online（并设 RUN_ONLINE=1）
+addopts = "-m 'not online'"
+markers = [
+    "online: 触网边界探针（需 RUN_ONLINE=1 且 cookies.json 有效），消耗请求配额",
+]

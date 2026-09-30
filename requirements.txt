@@ -1,0 +1,8 @@
+# pip 兜底依赖（推荐用 uv：uv sync）。
+# Windows 下 0.7.4 为已验证的稳定版本（更高版本曾出现 OPENSSL_internal TLS 握手兼容问题）。
+curl-cffi==0.7.4
+
+# 历史回补 backfill/（BT zst → PostgreSQL）
+psycopg[binary]>=3.3.6
+zstandard>=0.25.0
+pyarrow>=25.0.1

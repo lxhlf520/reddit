@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+
+# 环境变量与凭据（不入库）
+.env
+cookies.json
+
+# 数据库
+*.db
+*.db-journal
+*.sqlite
+
+# 代理池（含机场节点凭据，每台机器自行生成）
+clash_worker/
+
+# 日志与临时文件
+*.log
+_*.json
+_probe*.py
+
+# backfill 运行期产物（下载暂存/会话；magnets.json/torrents/ 是重灌能力资产，保留入库）
+backfill/bt_data/
+backfill/stats.csv
+

@@ -1,0 +1,925 @@
+{
+  "generated_at": "2026-09-28T10:02:47.241272+00:00",
+  "from_month": "2020-01",
+  "to_month": "2026-08",
+  "trackers": [
+    "udp://tracker.opentrackr.org:1337/announce",
+    "udp://open.demonii.com:1337/announce",
+    "udp://tracker.openbittorrent.com:6969/announce"
+  ],
+  "total_magnet": {
+    "infohash": "3d426c47c767d40f82c7ef0f47c3acacedd2bf44",
+    "magnet": "magnet:?xt=urn:btih:3d426c47c767d40f82c7ef0f47c3acacedd2bf44&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce",
+    "torrent": "3d426c47c767d40f82c7ef0f47c3acacedd2bf44.torrent",
+    "select_file": {
+      "comments/2020-01": {
+        "index": 170,
+        "size": 15532228450,
+        "path": "comments/RC_2020-01.zst"
+      },
+      "comments/2020-02": {
+        "index": 171,
+        "size": 14916806053,
+        "path": "comments/RC_2020-02.zst"
+      },
+      "comments/2020-03": {
+        "index": 172,
+        "size": 16378743253,
+        "path": "comments/RC_2020-03.zst"
+      },
+      "comments/2020-04": {
+        "index": 173,
+        "size": 17826044170,
+        "path": "comments/RC_2020-04.zst"
+      },
+      "comments/2020-05": {
+        "index": 174,
+        "size": 19190083109,
+        "path": "comments/RC_2020-05.zst"
+      },
+      "comments/2020-06": {
+        "index": 175,
+        "size": 18954940716,
+        "path": "comments/RC_2020-06.zst"
+      },
+      "comments/2020-07": {
+        "index": 176,
+        "size": 19781736532,
+        "path": "comments/RC_2020-07.zst"
+      },
+      "comments/2020-08": {
+        "index": 177,
+        "size": 19732441637,
+        "path": "comments/RC_2020-08.zst"
+      },
+      "comments/2020-09": {
+        "index": 178,
+        "size": 18421792002,
+        "path": "comments/RC_2020-09.zst"
+      },
+      "comments/2020-10": {
+        "index": 179,
+        "size": 18749262278,
+        "path": "comments/RC_2020-10.zst"
+      },
+      "comments/2020-11": {
+        "index": 180,
+        "size": 18418387061,
+        "path": "comments/RC_2020-11.zst"
+      },
+      "comments/2020-12": {
+        "index": 181,
+        "size": 19222994313,
+        "path": "comments/RC_2020-12.zst"
+      },
+      "comments/2021-01": {
+        "index": 182,
+        "size": 21275192214,
+        "path": "comments/RC_2021-01.zst"
+      },
+      "comments/2021-02": {
+        "index": 183,
+        "size": 21143225080,
+        "path": "comments/RC_2021-02.zst"
+      },
+      "comments/2021-03": {
+        "index": 184,
+        "size": 23011874558,
+        "path": "comments/RC_2021-03.zst"
+      },
+      "comments/2021-04": {
+        "index": 185,
+        "size": 21525235325,
+        "path": "comments/RC_2021-04.zst"
+      },
+      "comments/2021-05": {
+        "index": 186,
+        "size": 22396185158,
+        "path": "comments/RC_2021-05.zst"
+      },
+      "comments/2021-06": {
+        "index": 187,
+        "size": 21520907943,
+        "path": "comments/RC_2021-06.zst"
+      },
+      "comments/2021-07": {
+        "index": 188,
+        "size": 22093509363,
+        "path": "comments/RC_2021-07.zst"
+      },
+      "comments/2021-08": {
+        "index": 189,
+        "size": 23688732388,
+        "path": "comments/RC_2021-08.zst"
+      },
+      "comments/2021-09": {
+        "index": 190,
+        "size": 22948425254,
+        "path": "comments/RC_2021-09.zst"
+      },
+      "comments/2021-10": {
+        "index": 191,
+        "size": 23414272320,
+        "path": "comments/RC_2021-10.zst"
+      },
+      "comments/2021-11": {
+        "index": 192,
+        "size": 23708672424,
+        "path": "comments/RC_2021-11.zst"
+      },
+      "comments/2021-12": {
+        "index": 193,
+        "size": 24632267019,
+        "path": "comments/RC_2021-12.zst"
+      },
+      "comments/2022-01": {
+        "index": 194,
+        "size": 27150861981,
+        "path": "comments/RC_2022-01.zst"
+      },
+      "comments/2022-02": {
+        "index": 195,
+        "size": 22955643912,
+        "path": "comments/RC_2022-02.zst"
+      },
+      "comments/2022-03": {
+        "index": 196,
+        "size": 24998975021,
+        "path": "comments/RC_2022-03.zst"
+      },
+      "comments/2022-04": {
+        "index": 197,
+        "size": 24471592196,
+        "path": "comments/RC_2022-04.zst"
+      },
+      "comments/2022-05": {
+        "index": 198,
+        "size": 24742841760,
+        "path": "comments/RC_2022-05.zst"
+      },
+      "comments/2022-06": {
+        "index": 199,
+        "size": 23644971003,
+        "path": "comments/RC_2022-06.zst"
+      },
+      "comments/2022-07": {
+        "index": 200,
+        "size": 26176351341,
+        "path": "comments/RC_2022-07.zst"
+      },
+      "comments/2022-08": {
+        "index": 201,
+        "size": 29001520105,
+        "path": "comments/RC_2022-08.zst"
+      },
+      "comments/2022-09": {
+        "index": 202,
+        "size": 25223170674,
+        "path": "comments/RC_2022-09.zst"
+      },
+      "comments/2022-10": {
+        "index": 203,
+        "size": 25569910148,
+        "path": "comments/RC_2022-10.zst"
+      },
+      "comments/2022-11": {
+        "index": 204,
+        "size": 31480072243,
+        "path": "comments/RC_2022-11.zst"
+      },
+      "comments/2022-12": {
+        "index": 205,
+        "size": 32747184501,
+        "path": "comments/RC_2022-12.zst"
+      },
+      "comments/2023-01": {
+        "index": 206,
+        "size": 34535495091,
+        "path": "comments/RC_2023-01.zst"
+      },
+      "comments/2023-02": {
+        "index": 207,
+        "size": 24422677512,
+        "path": "comments/RC_2023-02.zst"
+      },
+      "comments/2023-03": {
+        "index": 208,
+        "size": 26686726603,
+        "path": "comments/RC_2023-03.zst"
+      },
+      "comments/2023-04": {
+        "index": 209,
+        "size": 27513349501,
+        "path": "comments/RC_2023-04.zst"
+      },
+      "comments/2023-05": {
+        "index": 210,
+        "size": 28273907001,
+        "path": "comments/RC_2023-05.zst"
+      },
+      "comments/2023-06": {
+        "index": 211,
+        "size": 27427752221,
+        "path": "comments/RC_2023-06.zst"
+      },
+      "comments/2023-07": {
+        "index": 212,
+        "size": 29288579348,
+        "path": "comments/RC_2023-07.zst"
+      },
+      "comments/2023-08": {
+        "index": 213,
+        "size": 31016306251,
+        "path": "comments/RC_2023-08.zst"
+      },
+      "comments/2023-09": {
+        "index": 214,
+        "size": 30838289432,
+        "path": "comments/RC_2023-09.zst"
+      },
+      "comments/2023-10": {
+        "index": 215,
+        "size": 29526630832,
+        "path": "comments/RC_2023-10.zst"
+      },
+      "comments/2023-11": {
+        "index": 216,
+        "size": 29107615019,
+        "path": "comments/RC_2023-11.zst"
+      },
+      "comments/2023-12": {
+        "index": 217,
+        "size": 29798980982,
+        "path": "comments/RC_2023-12.zst"
+      },
+      "comments/2024-01": {
+        "index": 218,
+        "size": 33304628595,
+        "path": "comments/RC_2024-01.zst"
+      },
+      "comments/2024-02": {
+        "index": 219,
+        "size": 31021344564,
+        "path": "comments/RC_2024-02.zst"
+      },
+      "comments/2024-03": {
+        "index": 220,
+        "size": 33025601413,
+        "path": "comments/RC_2024-03.zst"
+      },
+      "comments/2024-04": {
+        "index": 221,
+        "size": 32061762804,
+        "path": "comments/RC_2024-04.zst"
+      },
+      "comments/2024-05": {
+        "index": 222,
+        "size": 32339284323,
+        "path": "comments/RC_2024-05.zst"
+      },
+      "comments/2024-06": {
+        "index": 223,
+        "size": 32056762794,
+        "path": "comments/RC_2024-06.zst"
+      },
+      "comments/2024-07": {
+        "index": 224,
+        "size": 34270582243,
+        "path": "comments/RC_2024-07.zst"
+      },
+      "comments/2024-08": {
+        "index": 225,
+        "size": 35421053368,
+        "path": "comments/RC_2024-08.zst"
+      },
+      "comments/2024-09": {
+        "index": 226,
+        "size": 34220046641,
+        "path": "comments/RC_2024-09.zst"
+      },
+      "comments/2024-10": {
+        "index": 227,
+        "size": 35948880539,
+        "path": "comments/RC_2024-10.zst"
+      },
+      "comments/2024-11": {
+        "index": 228,
+        "size": 35448290300,
+        "path": "comments/RC_2024-11.zst"
+      },
+      "comments/2024-12": {
+        "index": 229,
+        "size": 35399081059,
+        "path": "comments/RC_2024-12.zst"
+      },
+      "comments/2025-01": {
+        "index": 230,
+        "size": 39734001207,
+        "path": "comments/RC_2025-01.zst"
+      },
+      "comments/2025-02": {
+        "index": 231,
+        "size": 36361376572,
+        "path": "comments/RC_2025-02.zst"
+      },
+      "comments/2025-03": {
+        "index": 232,
+        "size": 39083463675,
+        "path": "comments/RC_2025-03.zst"
+      },
+      "comments/2025-04": {
+        "index": 233,
+        "size": 37394002070,
+        "path": "comments/RC_2025-04.zst"
+      },
+      "comments/2025-05": {
+        "index": 234,
+        "size": 39243353690,
+        "path": "comments/RC_2025-05.zst"
+      },
+      "comments/2025-06": {
+        "index": 235,
+        "size": 38797723642,
+        "path": "comments/RC_2025-06.zst"
+      },
+      "comments/2025-07": {
+        "index": 236,
+        "size": 40156309969,
+        "path": "comments/RC_2025-07.zst"
+      },
+      "comments/2025-08": {
+        "index": 237,
+        "size": 39582135838,
+        "path": "comments/RC_2025-08.zst"
+      },
+      "comments/2025-09": {
+        "index": 238,
+        "size": 38150037998,
+        "path": "comments/RC_2025-09.zst"
+      },
+      "comments/2025-10": {
+        "index": 239,
+        "size": 38228532688,
+        "path": "comments/RC_2025-10.zst"
+      },
+      "comments/2025-11": {
+        "index": 240,
+        "size": 36965533660,
+        "path": "comments/RC_2025-11.zst"
+      },
+      "comments/2025-12": {
+        "index": 241,
+        "size": 38571341326,
+        "path": "comments/RC_2025-12.zst"
+      },
+      "submissions/2020-01": {
+        "index": 417,
+        "size": 6962033339,
+        "path": "submissions/RS_2020-01.zst"
+      },
+      "submissions/2020-02": {
+        "index": 418,
+        "size": 6889808633,
+        "path": "submissions/RS_2020-02.zst"
+      },
+      "submissions/2020-03": {
+        "index": 419,
+        "size": 8142373580,
+        "path": "submissions/RS_2020-03.zst"
+      },
+      "submissions/2020-04": {
+        "index": 420,
+        "size": 9156707148,
+        "path": "submissions/RS_2020-04.zst"
+      },
+      "submissions/2020-05": {
+        "index": 421,
+        "size": 7058225761,
+        "path": "submissions/RS_2020-05.zst"
+      },
+      "submissions/2020-06": {
+        "index": 422,
+        "size": 6895830995,
+        "path": "submissions/RS_2020-06.zst"
+      },
+      "submissions/2020-07": {
+        "index": 423,
+        "size": 7304899368,
+        "path": "submissions/RS_2020-07.zst"
+      },
+      "submissions/2020-08": {
+        "index": 424,
+        "size": 7593776915,
+        "path": "submissions/RS_2020-08.zst"
+      },
+      "submissions/2020-09": {
+        "index": 425,
+        "size": 7373593843,
+        "path": "submissions/RS_2020-09.zst"
+      },
+      "submissions/2020-10": {
+        "index": 426,
+        "size": 7680855094,
+        "path": "submissions/RS_2020-10.zst"
+      },
+      "submissions/2020-11": {
+        "index": 427,
+        "size": 7571720367,
+        "path": "submissions/RS_2020-11.zst"
+      },
+      "submissions/2020-12": {
+        "index": 428,
+        "size": 8133875307,
+        "path": "submissions/RS_2020-12.zst"
+      },
+      "submissions/2021-01": {
+        "index": 429,
+        "size": 8698915333,
+        "path": "submissions/RS_2021-01.zst"
+      },
+      "submissions/2021-02": {
+        "index": 430,
+        "size": 8365826778,
+        "path": "submissions/RS_2021-02.zst"
+      },
+      "submissions/2021-03": {
+        "index": 431,
+        "size": 9182807134,
+        "path": "submissions/RS_2021-03.zst"
+      },
+      "submissions/2021-04": {
+        "index": 432,
+        "size": 8967437476,
+        "path": "submissions/RS_2021-04.zst"
+      },
+      "submissions/2021-05": {
+        "index": 433,
+        "size": 9737265467,
+        "path": "submissions/RS_2021-05.zst"
+      },
+      "submissions/2021-06": {
+        "index": 434,
+        "size": 9458808322,
+        "path": "submissions/RS_2021-06.zst"
+      },
+      "submissions/2021-07": {
+        "index": 435,
+        "size": 7781606133,
+        "path": "submissions/RS_2021-07.zst"
+      },
+      "submissions/2021-08": {
+        "index": 436,
+        "size": 7805688849,
+        "path": "submissions/RS_2021-08.zst"
+      },
+      "submissions/2021-09": {
+        "index": 437,
+        "size": 7305231147,
+        "path": "submissions/RS_2021-09.zst"
+      },
+      "submissions/2021-10": {
+        "index": 438,
+        "size": 7502218999,
+        "path": "submissions/RS_2021-10.zst"
+      },
+      "submissions/2021-11": {
+        "index": 439,
+        "size": 7621917339,
+        "path": "submissions/RS_2021-11.zst"
+      },
+      "submissions/2021-12": {
+        "index": 440,
+        "size": 7990893566,
+        "path": "submissions/RS_2021-12.zst"
+      },
+      "submissions/2022-01": {
+        "index": 441,
+        "size": 8831448371,
+        "path": "submissions/RS_2022-01.zst"
+      },
+      "submissions/2022-02": {
+        "index": 442,
+        "size": 8353999552,
+        "path": "submissions/RS_2022-02.zst"
+      },
+      "submissions/2022-03": {
+        "index": 443,
+        "size": 9536972481,
+        "path": "submissions/RS_2022-03.zst"
+      },
+      "submissions/2022-04": {
+        "index": 444,
+        "size": 9595930360,
+        "path": "submissions/RS_2022-04.zst"
+      },
+      "submissions/2022-05": {
+        "index": 445,
+        "size": 10361357986,
+        "path": "submissions/RS_2022-05.zst"
+      },
+      "submissions/2022-06": {
+        "index": 446,
+        "size": 10046267542,
+        "path": "submissions/RS_2022-06.zst"
+      },
+      "submissions/2022-07": {
+        "index": 447,
+        "size": 10595209038,
+        "path": "submissions/RS_2022-07.zst"
+      },
+      "submissions/2022-08": {
+        "index": 448,
+        "size": 10439494623,
+        "path": "submissions/RS_2022-08.zst"
+      },
+      "submissions/2022-09": {
+        "index": 449,
+        "size": 9840183590,
+        "path": "submissions/RS_2022-09.zst"
+      },
+      "submissions/2022-10": {
+        "index": 450,
+        "size": 10162455676,
+        "path": "submissions/RS_2022-10.zst"
+      },
+      "submissions/2022-11": {
+        "index": 451,
+        "size": 11254315423,
+        "path": "submissions/RS_2022-11.zst"
+      },
+      "submissions/2022-12": {
+        "index": 452,
+        "size": 12294668859,
+        "path": "submissions/RS_2022-12.zst"
+      },
+      "submissions/2023-01": {
+        "index": 453,
+        "size": 12445460428,
+        "path": "submissions/RS_2023-01.zst"
+      },
+      "submissions/2023-02": {
+        "index": 454,
+        "size": 10006069583,
+        "path": "submissions/RS_2023-02.zst"
+      },
+      "submissions/2023-03": {
+        "index": 455,
+        "size": 11430000748,
+        "path": "submissions/RS_2023-03.zst"
+      },
+      "submissions/2023-04": {
+        "index": 456,
+        "size": 15620999745,
+        "path": "submissions/RS_2023-04.zst"
+      },
+      "submissions/2023-05": {
+        "index": 457,
+        "size": 11808653944,
+        "path": "submissions/RS_2023-05.zst"
+      },
+      "submissions/2023-06": {
+        "index": 458,
+        "size": 14605169967,
+        "path": "submissions/RS_2023-06.zst"
+      },
+      "submissions/2023-07": {
+        "index": 459,
+        "size": 18080875123,
+        "path": "submissions/RS_2023-07.zst"
+      },
+      "submissions/2023-08": {
+        "index": 460,
+        "size": 17892927055,
+        "path": "submissions/RS_2023-08.zst"
+      },
+      "submissions/2023-09": {
+        "index": 461,
+        "size": 16491238907,
+        "path": "submissions/RS_2023-09.zst"
+      },
+      "submissions/2023-10": {
+        "index": 462,
+        "size": 15886508067,
+        "path": "submissions/RS_2023-10.zst"
+      },
+      "submissions/2023-11": {
+        "index": 463,
+        "size": 15580880033,
+        "path": "submissions/RS_2023-11.zst"
+      },
+      "submissions/2023-12": {
+        "index": 464,
+        "size": 16276396198,
+        "path": "submissions/RS_2023-12.zst"
+      },
+      "submissions/2024-01": {
+        "index": 465,
+        "size": 17243608474,
+        "path": "submissions/RS_2024-01.zst"
+      },
+      "submissions/2024-02": {
+        "index": 466,
+        "size": 16302547460,
+        "path": "submissions/RS_2024-02.zst"
+      },
+      "submissions/2024-03": {
+        "index": 467,
+        "size": 17150274161,
+        "path": "submissions/RS_2024-03.zst"
+      },
+      "submissions/2024-04": {
+        "index": 468,
+        "size": 16889182289,
+        "path": "submissions/RS_2024-04.zst"
+      },
+      "submissions/2024-05": {
+        "index": 469,
+        "size": 16607036734,
+        "path": "submissions/RS_2024-05.zst"
+      },
+      "submissions/2024-06": {
+        "index": 470,
+        "size": 16275059043,
+        "path": "submissions/RS_2024-06.zst"
+      },
+      "submissions/2024-07": {
+        "index": 471,
+        "size": 17233318180,
+        "path": "submissions/RS_2024-07.zst"
+      },
+      "submissions/2024-08": {
+        "index": 472,
+        "size": 17563178470,
+        "path": "submissions/RS_2024-08.zst"
+      },
+      "submissions/2024-09": {
+        "index": 473,
+        "size": 16287636881,
+        "path": "submissions/RS_2024-09.zst"
+      },
+      "submissions/2024-10": {
+        "index": 474,
+        "size": 16828038966,
+        "path": "submissions/RS_2024-10.zst"
+      },
+      "submissions/2024-11": {
+        "index": 475,
+        "size": 16351600175,
+        "path": "submissions/RS_2024-11.zst"
+      },
+      "submissions/2024-12": {
+        "index": 476,
+        "size": 16715239018,
+        "path": "submissions/RS_2024-12.zst"
+      },
+      "submissions/2025-01": {
+        "index": 477,
+        "size": 17556989360,
+        "path": "submissions/RS_2025-01.zst"
+      },
+      "submissions/2025-02": {
+        "index": 478,
+        "size": 16013853620,
+        "path": "submissions/RS_2025-02.zst"
+      },
+      "submissions/2025-03": {
+        "index": 479,
+        "size": 17711981767,
+        "path": "submissions/RS_2025-03.zst"
+      },
+      "submissions/2025-04": {
+        "index": 480,
+        "size": 17446582182,
+        "path": "submissions/RS_2025-04.zst"
+      },
+      "submissions/2025-05": {
+        "index": 481,
+        "size": 18614904897,
+        "path": "submissions/RS_2025-05.zst"
+      },
+      "submissions/2025-06": {
+        "index": 482,
+        "size": 18675679932,
+        "path": "submissions/RS_2025-06.zst"
+      },
+      "submissions/2025-07": {
+        "index": 483,
+        "size": 18809134306,
+        "path": "submissions/RS_2025-07.zst"
+      },
+      "submissions/2025-08": {
+        "index": 484,
+        "size": 19025312560,
+        "path": "submissions/RS_2025-08.zst"
+      },
+      "submissions/2025-09": {
+        "index": 485,
+        "size": 18104933980,
+        "path": "submissions/RS_2025-09.zst"
+      },
+      "submissions/2025-10": {
+        "index": 486,
+        "size": 18440996459,
+        "path": "submissions/RS_2025-10.zst"
+      },
+      "submissions/2025-11": {
+        "index": 487,
+        "size": 18186391335,
+        "path": "submissions/RS_2025-11.zst"
+      },
+      "submissions/2025-12": {
+        "index": 488,
+        "size": 18497788409,
+        "path": "submissions/RS_2025-12.zst"
+      }
+    }
+  },
+  "monthly_torrents": {
+    "comments/2026-01": {
+      "infohash": "8412b89151101d88c915334c45d9c223169a1a60",
+      "size": 42027209694,
+      "path": "comments/RC_2026-01.zst",
+      "torrent": "8412b89151101d88c915334c45d9c223169a1a60.torrent"
+    },
+    "submissions/2026-01": {
+      "infohash": "8412b89151101d88c915334c45d9c223169a1a60",
+      "size": 19601894565,
+      "path": "submissions/RS_2026-01.zst",
+      "torrent": "8412b89151101d88c915334c45d9c223169a1a60.torrent"
+    },
+    "comments/2026-02": {
+      "infohash": "c5ba00048236b60f819dbf010e9034d24fc291fb",
+      "size": 42543698410,
+      "path": "comments/RC_2026-02.zst",
+      "torrent": "c5ba00048236b60f819dbf010e9034d24fc291fb.torrent"
+    },
+    "submissions/2026-02": {
+      "infohash": "c5ba00048236b60f819dbf010e9034d24fc291fb",
+      "size": 17833456376,
+      "path": "submissions/RS_2026-02.zst",
+      "torrent": "c5ba00048236b60f819dbf010e9034d24fc291fb.torrent"
+    },
+    "comments/2026-03": {
+      "infohash": "668087bb8c8c9c763b27a1a4c5e7fcb6add25f2c",
+      "size": 46820807731,
+      "path": "comments/RC_2026-03.zst",
+      "torrent": "668087bb8c8c9c763b27a1a4c5e7fcb6add25f2c.torrent"
+    },
+    "submissions/2026-03": {
+      "infohash": "668087bb8c8c9c763b27a1a4c5e7fcb6add25f2c",
+      "size": 21583434410,
+      "path": "submissions/RS_2026-03.zst",
+      "torrent": "668087bb8c8c9c763b27a1a4c5e7fcb6add25f2c.torrent"
+    },
+    "comments/2026-04": {
+      "infohash": "85d017ddd06920534187e7d45f21c7cec90c9bca",
+      "size": 46375666679,
+      "path": "comments/RC_2026-04.zst",
+      "torrent": "85d017ddd06920534187e7d45f21c7cec90c9bca.torrent"
+    },
+    "submissions/2026-04": {
+      "infohash": "85d017ddd06920534187e7d45f21c7cec90c9bca",
+      "size": 22168941711,
+      "path": "submissions/RS_2026-04.zst",
+      "torrent": "85d017ddd06920534187e7d45f21c7cec90c9bca.torrent"
+    },
+    "comments/2026-05": {
+      "infohash": "55199eff9368cde1f5c1262dd7c1af09f7503ea5",
+      "size": 47844685635,
+      "path": "comments/RC_2026-05.zst",
+      "torrent": "55199eff9368cde1f5c1262dd7c1af09f7503ea5.torrent"
+    },
+    "submissions/2026-05": {
+      "infohash": "55199eff9368cde1f5c1262dd7c1af09f7503ea5",
+      "size": 23823383434,
+      "path": "submissions/RS_2026-05.zst",
+      "torrent": "55199eff9368cde1f5c1262dd7c1af09f7503ea5.torrent"
+    },
+    "comments/2026-06": {
+      "infohash": "3bac8bd352bbb74bbb23df4273cf3da5d66ee5a5",
+      "size": 48180477828,
+      "path": "comments/RC_2026-06.zst",
+      "torrent": "3bac8bd352bbb74bbb23df4273cf3da5d66ee5a5.torrent"
+    },
+    "submissions/2026-06": {
+      "infohash": "3bac8bd352bbb74bbb23df4273cf3da5d66ee5a5",
+      "size": 22197371466,
+      "path": "submissions/RS_2026-06.zst",
+      "torrent": "3bac8bd352bbb74bbb23df4273cf3da5d66ee5a5.torrent"
+    },
+    "comments/2026-07": {
+      "infohash": "e04a4fda12826ab1d181eef6512b36aca63c70ff",
+      "size": 57061907266,
+      "path": "comments/RC_2026-07.zst",
+      "torrent": "e04a4fda12826ab1d181eef6512b36aca63c70ff.torrent"
+    },
+    "submissions/2026-07": {
+      "infohash": "e04a4fda12826ab1d181eef6512b36aca63c70ff",
+      "size": 23210654436,
+      "path": "submissions/RS_2026-07.zst",
+      "torrent": "e04a4fda12826ab1d181eef6512b36aca63c70ff.torrent"
+    },
+    "comments/2026-08": {
+      "infohash": "f4848163a5fb650e4b15eee0202858447bca120a",
+      "size": 51525496195,
+      "path": "comments/RC_2026-08.zst",
+      "torrent": "f4848163a5fb650e4b15eee0202858447bca120a.torrent"
+    },
+    "submissions/2026-08": {
+      "infohash": "f4848163a5fb650e4b15eee0202858447bca120a",
+      "size": 23087672710,
+      "path": "submissions/RS_2026-08.zst",
+      "torrent": "f4848163a5fb650e4b15eee0202858447bca120a.torrent"
+    }
+  },
+  "expected_rows": {
+    "comments/2020-01": 153498208,
+    "submissions/2020-01": 21989643,
+    "comments/2020-02": 148386817,
+    "submissions/2020-02": 22242008,
+    "comments/2020-03": 166266315,
+    "submissions/2020-03": 26577226,
+    "comments/2020-04": 178511581,
+    "submissions/2020-04": 28501627,
+    "comments/2020-05": 189993779,
+    "submissions/2020-05": 28297185,
+    "comments/2020-06": 187914434,
+    "submissions/2020-06": 27557757,
+    "comments/2020-07": 194244994,
+    "submissions/2020-07": 28436736,
+    "comments/2020-08": 196099301,
+    "submissions/2020-08": 28883496,
+    "comments/2020-09": 182549761,
+    "submissions/2020-09": 27814712,
+    "comments/2020-10": 186583890,
+    "submissions/2020-10": 28659441,
+    "comments/2020-11": 186083723,
+    "submissions/2020-11": 28002626,
+    "comments/2020-12": 191317162,
+    "submissions/2020-12": 29695450,
+    "comments/2021-01": 210496207,
+    "submissions/2021-01": 32704571,
+    "comments/2021-02": 193510365,
+    "submissions/2021-02": 31147947,
+    "comments/2021-03": 207454415,
+    "submissions/2021-03": 33006103,
+    "comments/2021-04": 204573086,
+    "submissions/2021-04": 31616206,
+    "comments/2021-05": 217655366,
+    "submissions/2021-05": 36310673,
+    "comments/2021-06": 208027069,
+    "submissions/2021-06": 34118481,
+    "comments/2021-07": 210955954,
+    "submissions/2021-07": 28922711,
+    "comments/2021-08": 225681244,
+    "submissions/2021-08": 28384220,
+    "comments/2021-09": 220086513,
+    "submissions/2021-09": 27316260,
+    "comments/2021-10": 227527379,
+    "submissions/2021-10": 28567813,
+    "comments/2021-11": 228289963,
+    "submissions/2021-11": 29048277,
+    "comments/2021-12": 235807471,
+    "submissions/2021-12": 29863861,
+    "comments/2022-01": 256766679,
+    "submissions/2022-01": 32091070,
+    "comments/2022-02": 219927645,
+    "submissions/2022-02": 29843162,
+    "comments/2022-03": 236554668,
+    "submissions/2022-03": 32677372,
+    "submissions/2022-04": 33002461,
+    "comments/2022-05": 230492108,
+    "submissions/2022-05": 34838318,
+    "comments/2022-06": 218842949,
+    "submissions/2022-06": 34395243,
+    "comments/2022-07": 242504279,
+    "submissions/2022-07": 37222497,
+    "submissions/2023-12": 39245797,
+    "submissions/2024-01": 41263034,
+    "submissions/2024-02": 39030731,
+    "submissions/2024-03": 41926097,
+    "submissions/2024-04": 40701692,
+    "submissions/2024-05": 39877545,
+    "submissions/2024-06": 38423968,
+    "submissions/2024-07": 40924291,
+    "submissions/2024-08": 41477291,
+    "submissions/2024-09": 38596941,
+    "submissions/2024-10": 38986522,
+    "submissions/2024-11": 38022413,
+    "submissions/2024-12": 38188278,
+    "submissions/2025-01": 39905721,
+    "submissions/2025-02": 36173238,
+    "submissions/2025-03": 39637989,
+    "submissions/2025-04": 38776405,
+    "submissions/2025-05": 40563699,
+    "submissions/2025-06": 40417850,
+    "submissions/2025-07": 42900690,
+    "submissions/2025-08": 44170194,
+    "submissions/2025-09": 42368178,
+    "submissions/2025-10": 43919437,
+    "submissions/2025-11": 42567338,
+    "submissions/2025-12": 42861083,
+    "submissions/2026-01": 46094846,
+    "submissions/2026-02": 41434105
+  }
+}
