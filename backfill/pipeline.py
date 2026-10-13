@@ -243,7 +243,7 @@ class Pipeline:
             return "failed"
         zst = self.ensure_downloaded(key)
         if not zst:
-            self._upsert(key, retries=self._retries(key) + 1)
+            self._upsert(key, status="downloading", retries=self._retries(key) + 1)
             log.warning(f"{key}: 本轮下载未完成（retries+1，下轮续传）")
             return "downloading"
         stats = self.ingest(key, zst)
