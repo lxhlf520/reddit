@@ -5,9 +5,9 @@ CREATE TABLE IF NOT EXISTS posts (
     id           text        NOT NULL,
     author       text,
     subreddit    text        NOT NULL,
-    title        text,
-    selftext     text,
-    url          text,
+    title        bytea,
+    selftext     bytea,
+    url          bytea,
     domain       text,
     permalink    text,
     score        bigint,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS posts (
     preview      jsonb,
     gallery_data jsonb,
     all_awardings jsonb,
-    raw          jsonb        NOT NULL,
+    raw          bytea       NOT NULL,
     ingested_at  timestamptz  DEFAULT now(),
     PRIMARY KEY (id, created_utc)
 ) PARTITION BY RANGE (created_utc);
@@ -396,7 +396,7 @@ CREATE TABLE IF NOT EXISTS comments (
     id           text        NOT NULL,
     author       text,
     subreddit    text        NOT NULL,
-    body         text,
+    body         bytea,
     score        bigint,
     created_utc  bigint      NOT NULL,
     edited       timestamptz,
@@ -411,7 +411,7 @@ CREATE TABLE IF NOT EXISTS comments (
     total_awards_received bigint,
     author_flair_text text,
     removed_by_category text,
-    raw          jsonb        NOT NULL,
+    raw          bytea       NOT NULL,
     ingested_at  timestamptz  DEFAULT now(),
     PRIMARY KEY (id, created_utc)
 ) PARTITION BY RANGE (created_utc);

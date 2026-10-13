@@ -1,27 +1,66 @@
 # -*- coding: utf-8 -*-
-"""zst → PostgreSQL COPY 入库（整月单事务，分区级幂等）。
+"""zst → PostgreSQL asyncpg + gzip codec 入库（整月单事务，分区级幂等）。
 
 数据形态（Arctic Shift zst dump，逐行 JSON）:
 - 每行一条记录，字段与官方 API 同构（107 字段，随年代增减）
 - kind: submissions | comments → 目标表 posts | comments（月度分区）
 
+压缩存储:
+- 长文本列（title/selftext/url/body/raw）建成 bytea
+- asyncpg 入口注册 gzip codec：写入自动压缩、读出自动解压、代码层零感知
+- 预估压缩率 3~5x（raw JSONB 5~10x）
+
 幂等策略:
 - 先 DROP 目标月分区再建（pg_schema.sql 的幂等 DDL），整月重灌不残留旧数据
-- COPY FROM STDIN 单事务，失败整月回滚，import_log 状态不变可重试
+- asyncpg 事务单月，失败整月回滚，import_log 状态不变可重试
 
 用法（通常由 pipeline 驱动）:
     from backfill.ingest import ingest_month
-    rows, dur = ingest_month(dsn, Path("RC_2020-01.zst"), "comments", "2020-01")
+    rows, dur = await ingest_month(dsn, Path("RC_2020-01.zst"), "comments", "2020-01")
 """
 
+import asyncio
+import gzip
 import json
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-import psycopg
+import asyncpg
 import zstandard
-from psycopg.types.json import Json
+
+# ── gzip codec（asyncpg 入口注册一次，代码层零感知）──────────────
+
+async def init_gzip_codec(conn):
+    """asyncpg 连接 init 回调：注册 bytea 全局 gzip codec。
+    
+    写入：str → gzip.compress → bytes → bytea
+    读出：bytea → gzip.decompress → str（非 gzip 原样返回 bytes，容错）
+    
+    注意：asyncpg 的 encoder/decoder 必须是同步函数（返回 bytes，不是 coroutine）。
+    """
+    def encode_str(val):
+        if val is None:
+            return None
+        if isinstance(val, bytes):
+            return val  # 已经是 bytes，透传
+        return gzip.compress(val.encode('utf-8'))
+    
+    def decode_bytea(val):
+        if val is None:
+            return None
+        try:
+            return gzip.decompress(val).decode('utf-8')
+        except:
+            return val  # 非 gzip 容错（返回 bytes）
+    
+    await conn.set_type_codec(
+        'bytea',
+        schema='pg_catalog',
+        encoder=encode_str,
+        decoder=decode_bytea,
+        format='binary'  # asyncpg 支持 'text'/'binary'/'tuple'
+    )
 
 # ── 列映射（zst JSON 字段 → 表列；None = 列必须存在但源可缺）─────
 
@@ -48,20 +87,28 @@ STRIP_PREFIX = ("id", "link_id", "parent_id")
 # edited 可能是 bool 或 epoch 秒（Reddit 历史口径变化），统一转 timestamptz
 TS_FIELDS = ("edited",)
 
-# JSONB 列：dict/list 需要 Json() 包装（COPY TEXT 格式不能直接适应 dict）
-JSONB_COLUMNS = ("media", "preview", "gallery_data", "all_awardings", "raw")
+# JSONB 列：dict/list 需要 JSON 序列化（media/preview/gallery_data/all_awardings）
+JSONB_COLUMNS = ("media", "preview", "gallery_data", "all_awardings")
+
+# bytea 列（长文本，gzip 压缩）：title/selftext/url/body/raw
+# asyncpg codec 自动处理 str → gzip → bytes，代码层照常传 str
+BYTEA_COLUMNS = ("title", "selftext", "url", "body", "raw")
 
 # int 列：源偶发 float（如 score 1.0），统一截断成 int 避免 COPY 类型错
 INT_COLUMNS = ("score", "num_comments", "created_utc", "gilded",
                "total_awards_received", "controversiality")
 
 
-def _adapt(row: dict, columns: list) -> list:
-    """源 dict → COPY 行（顺序与 columns 一致）。"""
+def _adapt(row: dict, columns: list) -> tuple:
+    """源 dict → asyncpg record（顺序与 columns 一致）。
+    
+    bytea 列（title/selftext/url/body/raw）传 str，codec 自动 gzip 压缩。
+    raw 列：整行原文 json.dumps(row) → str → codec gzip → bytea。
+    """
     out = []
     for col in columns:
         if col == "raw":
-            out.append(Json(row))          # 整行原文兜底（JSONB）
+            out.append(json.dumps(row, ensure_ascii=False))  # str → codec gzip
             continue
         v = row.get(col)
         if col in STRIP_PREFIX and isinstance(v, str) and "_" in v:
@@ -75,9 +122,10 @@ def _adapt(row: dict, columns: list) -> list:
         if col in INT_COLUMNS and isinstance(v, float):
             v = int(v)
         if col in JSONB_COLUMNS and v is not None:
-            v = Json(v)                   # dict/list → JSONB 文本
+            v = json.dumps(v, ensure_ascii=False)  # dict/list → JSON 文本
+        # bytea 列（title/selftext/url/body）传 str，codec 自动 gzip
         out.append(v)
-    return out
+    return tuple(out)
 
 
 def iter_zst_lines(path: Path):
@@ -95,34 +143,12 @@ def iter_zst_lines(path: Path):
             yield json.loads(buf)
 
 
-def _copy_stream(cur, partition, columns, zst_path, lo, hi,
-                 batch_rows, t0, stats, log):
-    """把 zst 行流 COPY 进目标表；返回行数（越界行被跳过并计数）。
 
-    越界过滤（lo <= created_utc < hi）同时解决两件事:
-    - RANGE 分区拒绝越界行 → 一条脏数据毁掉整月 COPY
-    - 重灌幂等：TRUNCATE 月分区即可，无跨月残留
-    """
-    cols = ", ".join(columns)
-    with cur.copy(f"COPY {partition} ({cols}) FROM STDIN") as cp:
-        for rec in iter_zst_lines(zst_path):
-            cu = rec.get("created_utc")
-            if not isinstance(cu, (int, float)) or not (lo <= cu < hi):
-                stats["skipped_range"] += 1
-                continue
-            cp.write_row(_adapt(rec, columns))
-            stats["rows"] += 1
-            if stats["rows"] % batch_rows == 0:
-                log(f"  {partition}: {stats['rows']:,} 行 "
-                    f"({stats['rows'] / (time.time() - t0):,.0f} 行/s)")
-    return stats["rows"]
+async def ingest_month(dsn: str, zst_path: Path, kind: str, month: str,
+                       batch_rows: int = 500_000, log=print) -> dict:
+    """整月入库（asyncpg + gzip codec，长文本列自动压缩）。
 
-
-def ingest_month(dsn: str, zst_path: Path, kind: str, month: str,
-                 batch_rows: int = 500_000, log=print) -> dict:
-    """整月入库（COPY 协议，比 executemany 快一个量级，82 亿条的必选项）。
-
-    快路径：COPY 直指月分区（全速）。
+    快路径：copy_records_to_table 直指月分区（全速）。
     慢路径（自动降级）：直接 COPY 因 PK 冲突等失败时，回滚后改走
     UNLOGGED 临时表 + INSERT ... ON CONFLICT DO NOTHING（约 2 倍耗时，
     但保证 zst 内部重复 id 不再让整月死循环失败）。
@@ -145,35 +171,52 @@ def ingest_month(dsn: str, zst_path: Path, kind: str, month: str,
     t0 = time.time()
     stats = {"rows": 0, "skipped_range": 0, "deduped": 0,
              "fallback": False, "seconds": 0.0}
-    with psycopg.connect(dsn) as conn:
-        with conn.cursor() as cur:
-            cur.execute(f"TRUNCATE {partition}")
-            try:
-                _copy_stream(cur, partition, columns, zst_path, lo, hi,
-                             batch_rows, t0, stats, log)
-                conn.commit()
-            except psycopg.Error as e:
-                # 冲突/中断等：回滚半个 COPY（TRUNCATE 一并回滚），降级慢路径
-                conn.rollback()
-                stats["fallback"] = True
-                stats["rows"] = 0
-                stats["skipped_range"] = 0   # 重灌时重新计，避免双重计数
-                log(f"  {partition}: 直接 COPY 失败（{type(e).__name__}），"
-                    f"降级 ON CONFLICT 路径重灌")
-                t1 = time.time()
-                cur.execute(f"TRUNCATE {partition}")
-                cur.execute(
-                    f"CREATE TEMP TABLE tmp_ingest "
-                    f"(LIKE {partition} INCLUDING DEFAULTS) ON COMMIT DROP")
-                _copy_stream(cur, "tmp_ingest", columns, zst_path, lo, hi,
-                             batch_rows, t1, stats, log)
-                cols = ", ".join(columns)
-                cur.execute(
-                    f"INSERT INTO {partition} ({cols}) "
-                    f"SELECT {cols} FROM tmp_ingest "
-                    f"ON CONFLICT (id, created_utc) DO NOTHING")
-                stats["deduped"] = stats["rows"] - cur.rowcount
-                stats["rows"] = cur.rowcount
-                conn.commit()
+    
+    conn = await asyncpg.connect(dsn, init=init_gzip_codec)
+    try:
+        await conn.execute(f"TRUNCATE {partition}")
+        
+        # 收集记录（越界过滤）
+        records = []
+        for rec in iter_zst_lines(zst_path):
+            cu = rec.get("created_utc")
+            if not isinstance(cu, (int, float)) or not (lo <= cu < hi):
+                stats["skipped_range"] += 1
+                continue
+            records.append(_adapt(rec, columns))
+            stats["rows"] += 1
+            if stats["rows"] % batch_rows == 0:
+                log(f"  {partition}: {stats['rows']:,} 行 "
+                    f"({stats['rows'] / (time.time() - t0):,.0f} 行/s)")
+        
+        # 批量 COPY
+        try:
+            await conn.copy_records_to_table(
+                partition, records=records, columns=columns)
+        except asyncpg.UniqueViolationError:
+            # 冲突：回滚，降级慢路径
+            stats["fallback"] = True
+            stats["rows"] = 0
+            stats["skipped_range"] = 0
+            log(f"  {partition}: 直接 COPY 失败（UniqueViolation），"
+                f"降级 ON CONFLICT 路径重灌")
+            t1 = time.time()
+            await conn.execute(f"TRUNCATE {partition}")
+            await conn.execute(
+                f"CREATE TEMP TABLE tmp_ingest "
+                f"(LIKE {partition} INCLUDING DEFAULTS)")
+            await conn.copy_records_to_table(
+                "tmp_ingest", records=records, columns=columns)
+            cols = ", ".join(columns)
+            result = await conn.execute(
+                f"INSERT INTO {partition} ({cols}) "
+                f"SELECT {cols} FROM tmp_ingest "
+                f"ON CONFLICT (id, created_utc) DO NOTHING")
+            stats["rows"] = int(result.split()[-1]) if result else 0
+            stats["deduped"] = len(records) - stats["rows"]
+            await conn.execute("DROP TABLE tmp_ingest")
+    finally:
+        await conn.close()
+    
     stats["seconds"] = time.time() - t0
     return stats

@@ -7,6 +7,9 @@
   建表 → 字段映射 → COPY 入库 → 月分区路由。
   正式全量数据仍走 pipeline.py（BT dump）；本工具不写 import_log（样本 ≠ 月份完成）。
 
+压缩存储:
+  长文本列（title/selftext/url/body/raw）建成 bytea，asyncpg gzip codec 自动压缩。
+
 网络: Arctic Shift 国内直连可达且更快，本工具显式空代理（禁止套代理）。
 
 API 契约（2026-09 实测）:
@@ -21,6 +24,7 @@ API 契约（2026-09 实测）:
   uv run python -m backfill.fetch_sample --month 2022-06 --dsn postgresql://...
 """
 import argparse
+import asyncio
 import json
 import sys
 import time
@@ -28,10 +32,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-import psycopg
+import asyncpg
 
 from backfill.gen_schema import month_bounds
-from backfill.ingest import COMMENT_COLUMNS, POST_COLUMNS, _adapt
+from backfill.ingest import COMMENT_COLUMNS, POST_COLUMNS, _adapt, init_gzip_codec
 
 API_BASE = "https://arctic-shift.photon-reddit.com/api"
 PAGE_LIMIT = 100          # 实测 API 单请求上限（limit=200 起 400）
@@ -107,24 +111,26 @@ def fetch_rows(kind: str, month: str, target: int) -> tuple:
     return rows[:target], requests, skipped
 
 
-def check_partitions(dsn: str, month: str, kinds: list) -> list:
+async def check_partitions(dsn: str, month: str, kinds: list) -> list:
     """入库前置检查：返回缺失的目标分区表名（fail-fast）。
 
     PG 不可达或表未建时在拉数据前就退出，避免白拉几分钟才发现。
     """
     y, m = month.split("-")
     missing = []
-    with psycopg.connect(dsn, connect_timeout=15) as conn:
-        with conn.cursor() as cur:
-            for kind in kinds:
-                partition = f"{kind}_{y}_{m}"
-                if not cur.execute("SELECT to_regclass(%s)",
-                                   (partition,)).fetchone()[0]:
-                    missing.append(partition)
+    conn = await asyncpg.connect(dsn, init=init_gzip_codec)
+    try:
+        for kind in kinds:
+            partition = f"{kind}_{y}_{m}"
+            result = await conn.fetchval("SELECT to_regclass($1)", partition)
+            if not result:
+                missing.append(partition)
+    finally:
+        await conn.close()
     return missing
 
 
-def load_rows(dsn: str, kind: str, month: str, rows: list) -> tuple:
+async def load_rows(dsn: str, kind: str, month: str, rows: list) -> tuple:
     """COPY 到临时表 → INSERT ON CONFLICT DO NOTHING（可重复运行）。
 
     返回 (inserted, dup, skipped_range)。
@@ -135,33 +141,46 @@ def load_rows(dsn: str, kind: str, month: str, rows: list) -> tuple:
     lo, hi = month_bounds(int(y), int(m))
     cols = ", ".join(columns)
     inserted = skipped_range = 0
-    with psycopg.connect(dsn) as conn:
-        with conn.cursor() as cur:
-            exists = cur.execute(
-                "SELECT to_regclass(%s)", (partition,)).fetchone()[0]
-            if not exists:
-                raise SystemExit(
-                    f"分区表 {partition} 不存在 —— 请先建表：\n"
-                    f"  uv run python -m backfill.dbtool init")
-            cur.execute(f"CREATE TEMP TABLE tmp_sample "
-                        f"(LIKE {partition} INCLUDING DEFAULTS) "
-                        f"ON COMMIT DROP")
-            with cur.copy(f"COPY tmp_sample ({cols}) FROM STDIN") as cp:
-                for rec in rows:
-                    cu = rec.get("created_utc")
-                    if not isinstance(cu, (int, float)) or not (lo <= cu < hi):
-                        skipped_range += 1
-                        continue
-                    cp.write_row(_adapt(rec, columns))
-            cur.execute(f"INSERT INTO {partition} ({cols}) "
-                        f"SELECT {cols} FROM tmp_sample "
-                        f"ON CONFLICT (id, created_utc) DO NOTHING")
-            inserted = cur.rowcount
-        conn.commit()
+    
+    conn = await asyncpg.connect(dsn, init=init_gzip_codec)
+    try:
+        exists = await conn.fetchval("SELECT to_regclass($1)", partition)
+        if not exists:
+            raise SystemExit(
+                f"分区表 {partition} 不存在 —— 请先建表：\n"
+                f"  uv run python -m backfill.dbtool init")
+        
+        # 收集记录（越界过滤）
+        records = []
+        for rec in rows:
+            cu = rec.get("created_utc")
+            if not isinstance(cu, (int, float)) or not (lo <= cu < hi):
+                skipped_range += 1
+                continue
+            records.append(_adapt(rec, columns))
+        
+        # 创建临时表并 COPY
+        await conn.execute(
+            f"CREATE TEMP TABLE tmp_sample "
+            f"(LIKE {partition} INCLUDING DEFAULTS)")
+        await conn.copy_records_to_table(
+            "tmp_sample", records=records, columns=columns)
+        
+        # INSERT ON CONFLICT
+        result = await conn.execute(
+            f"INSERT INTO {partition} ({cols}) "
+            f"SELECT {cols} FROM tmp_sample "
+            f"ON CONFLICT (id, created_utc) DO NOTHING")
+        inserted = int(result.split()[-1]) if result else 0
+        
+        await conn.execute("DROP TABLE tmp_sample")
+    finally:
+        await conn.close()
+    
     return inserted, len(rows) - inserted - skipped_range, skipped_range
 
 
-def main(argv=None) -> int:
+async def async_main(argv=None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(
@@ -190,8 +209,8 @@ def main(argv=None) -> int:
     kinds = [k for k, n in (("comments", args.comments),
                             ("posts", args.posts)) if n > 0]
     try:
-        missing = check_partitions(dsn, args.month, kinds)
-    except psycopg.Error as e:
+        missing = await check_partitions(dsn, args.month, kinds)
+    except Exception as e:
         print(f"PG 连接失败：{e}", file=sys.stderr)
         return 2
     if missing:
@@ -214,7 +233,7 @@ def main(argv=None) -> int:
         if not rows:
             print(f"[{kind}] 无数据，跳过入库")
             continue
-        inserted, dup, skipped_range = load_rows(dsn, kind, args.month, rows)
+        inserted, dup, skipped_range = await load_rows(dsn, kind, args.month, rows)
         print(f"[{kind}] 入库完成：新增 {inserted} 条，重复跳过 {dup} 条"
               + (f"，越界过滤 {skipped_range} 条" if skipped_range else ""))
         total_new += inserted
@@ -228,6 +247,10 @@ def main(argv=None) -> int:
     print(f'  uv run python -m backfill.dbtool sql "SELECT id, author, subreddit, '
           f'score, left(body, 50) FROM comments_{suffix} LIMIT 3"')
     return 0
+
+
+def main(argv=None) -> int:
+    return asyncio.run(async_main(argv))
 
 
 if __name__ == "__main__":
