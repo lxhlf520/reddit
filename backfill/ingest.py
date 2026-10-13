@@ -172,8 +172,8 @@ async def ingest_month(dsn: str, zst_path: Path, kind: str, month: str,
     stats = {"rows": 0, "skipped_range": 0, "deduped": 0,
              "fallback": False, "seconds": 0.0}
     
-    conn = await asyncpg.connect(dsn, init=init_gzip_codec)
-    try:
+    pool = await asyncpg.create_pool(dsn, init=init_gzip_codec, min_size=1, max_size=1)
+    async with pool.acquire() as conn:
         await conn.execute(f"TRUNCATE {partition}")
         
         # 收集记录（越界过滤）
@@ -215,8 +215,6 @@ async def ingest_month(dsn: str, zst_path: Path, kind: str, month: str,
             stats["rows"] = int(result.split()[-1]) if result else 0
             stats["deduped"] = len(records) - stats["rows"]
             await conn.execute("DROP TABLE tmp_ingest")
-    finally:
-        await conn.close()
     
     stats["seconds"] = time.time() - t0
     return stats

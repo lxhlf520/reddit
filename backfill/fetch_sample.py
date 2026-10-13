@@ -118,7 +118,7 @@ async def check_partitions(dsn: str, month: str, kinds: list) -> list:
     """
     y, m = month.split("-")
     missing = []
-    conn = await asyncpg.connect(dsn, init=init_gzip_codec)
+    conn = await asyncpg.connect(dsn)
     try:
         for kind in kinds:
             partition = f"{kind}_{y}_{m}"
@@ -142,8 +142,8 @@ async def load_rows(dsn: str, kind: str, month: str, rows: list) -> tuple:
     cols = ", ".join(columns)
     inserted = skipped_range = 0
     
-    conn = await asyncpg.connect(dsn, init=init_gzip_codec)
-    try:
+    pool = await asyncpg.create_pool(dsn, init=init_gzip_codec, min_size=1, max_size=1)
+    async with pool.acquire() as conn:
         exists = await conn.fetchval("SELECT to_regclass($1)", partition)
         if not exists:
             raise SystemExit(
@@ -174,8 +174,6 @@ async def load_rows(dsn: str, kind: str, month: str, rows: list) -> tuple:
         inserted = int(result.split()[-1]) if result else 0
         
         await conn.execute("DROP TABLE tmp_sample")
-    finally:
-        await conn.close()
     
     return inserted, len(rows) - inserted - skipped_range, skipped_range
 
