@@ -46,7 +46,7 @@ class BtDownloader:
     """单实例管理 aria2c 会话；每次 ensure_file 一轮（下载完自动退出）。"""
 
     def __init__(self, bt_dir: Path, aria2c: str = None,
-                 max_concurrent: int = 4, timeout_s: int = 0):
+                 max_concurrent: int = 1, timeout_s: int = 0):
         self.bt_dir = Path(bt_dir)
         # 目录延迟到实际下载时创建（dry-run 等无副作用）
         self.aria2c = aria2c or find_aria2c()
