@@ -137,6 +137,38 @@ class Pipeline:
                 cur.execute(f"SELECT count(*) FROM {partition}")
                 return cur.fetchone()[0]
 
+    def _cleanup_done_zst(self) -> None:
+        """清理已完成月份的 zst 文件释放磁盘空间。"""
+        try:
+            with psycopg.connect(self.dsn) as conn, conn.cursor() as cur:
+                cur.execute("SELECT type, month FROM import_log WHERE status='done'")
+                done_keys = {f"{t}/{m}" for t, m in cur.fetchall()}
+        except Exception as e:
+            log.warning(f"清理查询失败: {e}")
+            return
+        # 扫描 BT 目录，删除已完成月份的 zst
+        for mode in ("total", "monthly"):
+            base = self.bt_dir / mode / "reddit"
+            if not base.exists():
+                continue
+            for kind_dir in ("comments", "submissions"):
+                kind_path = base / kind_dir
+                if not kind_path.exists():
+                    continue
+                for zst in kind_path.glob("*.zst"):
+                    # 解析文件名：RC_2020-01.zst / RS_2020-01.zst
+                    name = zst.stem  # RC_2020-01 / RS_2020-01
+                    if "_" in name:
+                        prefix, month = name.split("_", 1)
+                        kind = "comments" if prefix == "RC" else "submissions"
+                        key = f"{kind}/{month}"
+                        if key in done_keys:
+                            try:
+                                zst.unlink()
+                                log.info(f"清理已完成: {zst.name}")
+                            except OSError as e:
+                                log.warning(f"清理失败 {zst.name}: {e}")
+
     # ── 单元处理 ─────────────────────────────────────────────
 
     def source_of(self, key: str) -> dict:
@@ -159,6 +191,8 @@ class Pipeline:
         mode = src["mode"]
         if self.dl.is_complete(key, declared, src.get("inner_path"), mode):
             return self.dl.zst_path(key, src.get("inner_path"), mode)
+        # 下载前清理已完成月份的 BT 文件释放空间
+        self._cleanup_done_zst()
         # 磁盘水位：暂存单月 ~70GB + aria2 控制文件，留 20% 余量；
         # 水位不足时本轮跳过（不标 failed），下轮水位恢复自动续
         root = self.dl.channel_dir(mode, key.split("/")[1])
