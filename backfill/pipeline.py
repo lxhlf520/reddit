@@ -426,6 +426,10 @@ def main() -> None:
                 log.error(f"{k}: 失败（retries+1）{e}")
                 st = "failed"
             summary[st] = summary.get(st, 0) + 1
+            # 下载未完成时停止处理后续 key，等待下轮（避免并发下载）
+            if st == "downloading":
+                log.info(f"{k}: 下载未完成，本轮停止，等待下轮续传")
+                break
         log.info(f"第 {round_no} 轮汇总: {summary}")
 
         try:
