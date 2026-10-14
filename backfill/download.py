@@ -129,6 +129,17 @@ class BtDownloader:
             str(torrent),
         ]
         self._run(cmd, log_path)
+        # 下载后检查：如果文件已完整（大小正确），删除控制文件
+        # 解决 aria2 下载完后控制文件残留的问题
+        for key in pending:
+            p = self.zst_path(key, mode="total")
+            if p.exists() and p.stat().st_size == sf[key]["size"]:
+                ctrl = self._ctrl_file("total", key.split("/")[1])
+                if ctrl.exists():
+                    try:
+                        ctrl.unlink()
+                    except OSError:
+                        pass
         return [k for k in pending
                 if self.is_complete(k, sf[k]["size"], mode="total")]
 
